@@ -15,6 +15,10 @@ let ArticleSchema = new Schema({
   note:{
     type:Schema.Types.ObjectId,
     ref: "Note"
+  },
+  blurb: {
+    type:String,
+    required: true
   }
 })
 

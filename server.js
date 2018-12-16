@@ -15,22 +15,20 @@ app.use(express.static("public"));
 app.engine("handlebars", exphbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
 
-let mongoConnect = process.env.MONGODB_URI || "mongodb://127.0.01/scraperDB";
+let mongoConnect = process.env.MONGODB_URI || "mongodb://127.0.0.1/scraperDB";
 
 mongoose.connect(mongoConnect);
 
 app.get("/scrape", function(req, res) {
   axios.get("http://www.wowhead.com").then(function(resp) {
+    //console.log(resp.data);
     let $ = cheerio.load(resp.data);
-    $(".news-list h1").each((i, element) => {
+    
+    $(".news-post").each((i, element) => {
       let result = {};
-      result.title = $(this)
-        .children("a")
-        .text();
-      result.link = $(this)
-        .children("a")
-        .attr("href");
-      console.log(result);
+      result.title = element.children[5].children[1].children[3].children[1].children[0].children[0].data;
+      result.link = element.children[1].attribs.href;
+      result.blurb = element.children[7].children[5].children[0].data;
       db.Article.create(result)
         .then(dbArticle => console.log(dbArticle))
         .catch(err => console.log(err));
@@ -38,6 +36,10 @@ app.get("/scrape", function(req, res) {
     res.send("Scrape complete");
   });
 });
+
+app.get("/",(req, res)=>{
+  res.render("index");
+})
 
 app.get("/articles", function(req, res) {
   db.Article.find({})
@@ -63,5 +65,5 @@ app.post("/articles/:id", function(req, res) {
 });
 
 app.listen(PORT, function() {
-  console.log(`:Listening on port ${PORT}.`);
+  console.log(`Listening on port ${PORT}.`);
 });
