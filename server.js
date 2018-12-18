@@ -3,17 +3,16 @@ const axios = require("axios");
 const mongoose = require("mongoose");
 const cheerio = require("cheerio");
 const logger = require("morgan");
-const exphbs = require("express-handlebars");
 const PORT = process.env.PORT || 3000;
 const db = require("./models");
 const app = express();
 
-app.use(logger("dev"))
+app.use(logger("dev"));
+// Parse request body as JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// Make public a static folder
 app.use(express.static("public"));
-app.engine("handlebars", exphbs({defaultLayout: "main"}));
-app.set("view engine", "handlebars");
 
 let mongoConnect = process.env.MONGODB_URI || "mongodb://127.0.0.1/scraperDB";
 
@@ -37,9 +36,11 @@ app.get("/scrape", function(req, res) {
   });
 });
 
-app.get("/",(req, res)=>{
-  res.render("index");
-})
+app.get("/", (req, res)=>{
+  db.Article.find({})
+  .then(dbArticles=>res.json(dbArticles))
+  .catch(err=>res.json(err));
+});
 
 app.get("/articles", function(req, res) {
   db.Article.find({})

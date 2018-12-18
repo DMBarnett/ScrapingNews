@@ -4,7 +4,7 @@ html {
 }
 
 body {
-  background-image: url("../images/country-quilt.png")
+  background-image: url("country-quilt.png")
 }
 
 .jumbotron {
@@ -29,7 +29,7 @@ body {
 
 .jumbotron .background-image {
   height: 100%;
-  background-image: url("../images/wowBanner.jpg");
+  background-image: url("wowBanner.jpg");
   background-size: cover;
 }
 
